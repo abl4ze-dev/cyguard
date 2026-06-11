@@ -1,4 +1,4 @@
-import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/lib/PageNotFound.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=ef8b20f3"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/lib/PageNotFound.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=82de9d48"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
 import * as RefreshRuntime from "/@react-refresh";
 const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
 let prevRefreshReg;
@@ -15,9 +15,9 @@ if (import.meta.hot && !inWebWorker) {
   window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
 }
 var _s = $RefreshSig$();
-import { useLocation } from "/node_modules/.vite/deps/react-router-dom.js?v=ef8b20f3";
+import { useLocation } from "/node_modules/.vite/deps/react-router-dom.js?v=c96743a3";
 import { base44 } from "/src/api/base44Client.js";
-import { useQuery } from "/node_modules/.vite/deps/@tanstack_react-query.js?v=ef8b20f3";
+import { useQuery } from "/node_modules/.vite/deps/@tanstack_react-query.js?v=95e257e8";
 export default function PageNotFound({ "data-collection-item-id": __dataCollectionItemId }) {
   _s();
   const location = useLocation();

@@ -41,6 +41,10 @@ npm install
 npm run dev
 ```
 
+> **Note:** The `vite.config.js` and `package.json` are pre-configured.
+> Make sure you have **Node.js 18+** installed.
+> After `npm install`, run `npm run dev` — the app will start at http://localhost:5173
+
 ## Extension Installation
 1. Open `chrome://extensions`
 2. Enable **Developer mode**

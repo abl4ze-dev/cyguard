@@ -1,4 +1,4 @@
-import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/Extension.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=ef8b20f3"; const Fragment = __vite__cjsImport0_react_jsxDevRuntime["Fragment"]; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/Extension.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=82de9d48"; const Fragment = __vite__cjsImport0_react_jsxDevRuntime["Fragment"]; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
 import * as RefreshRuntime from "/@react-refresh";
 const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
 let prevRefreshReg;
@@ -15,8 +15,8 @@ if (import.meta.hot && !inWebWorker) {
   window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
 }
 var _s = $RefreshSig$();
-import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=ef8b20f3"; const React = __vite__cjsImport3_react.__esModule ? __vite__cjsImport3_react.default : __vite__cjsImport3_react; const useState = __vite__cjsImport3_react["useState"];
-import { motion, AnimatePresence } from "/node_modules/.vite/deps/framer-motion.js?v=ef8b20f3";
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=82de9d48"; const React = __vite__cjsImport3_react.__esModule ? __vite__cjsImport3_react.default : __vite__cjsImport3_react; const useState = __vite__cjsImport3_react["useState"];
+import { motion, AnimatePresence } from "/node_modules/.vite/deps/framer-motion.js?v=82de9d48";
 import {
   Shield,
   Download,
@@ -44,11 +44,11 @@ import {
   Heart,
   Star,
   Users
-} from "/node_modules/.vite/deps/lucide-react.js?v=ef8b20f3";
+} from "/node_modules/.vite/deps/lucide-react.js?v=76f08321";
 import GlassCard from "/src/components/ui-custom/GlassCard.jsx";
 import NeonButton from "/src/components/ui-custom/NeonButton.jsx";
 import { downloadExtension } from "/src/utils/extensionDownload.js";
-import { downloadSourceCode } from "/src/utils/sourceDownload.js?t=1781203789212";
+import { downloadSourceCode } from "/src/utils/sourceDownload.js?t=1781205168005";
 import { base44 } from "/src/api/base44Client.js";
 const browsers = [
   { name: "Chrome", color: "from-blue-500/10 to-cyan-500/10", border: "border-blue-500/20" },

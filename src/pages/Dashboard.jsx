@@ -1,4 +1,4 @@
-import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/Dashboard.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=ef8b20f3"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/Dashboard.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=82de9d48"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
 import * as RefreshRuntime from "/@react-refresh";
 const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
 let prevRefreshReg;
@@ -15,12 +15,12 @@ if (import.meta.hot && !inWebWorker) {
   window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
 }
 var _s = $RefreshSig$();
-import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=ef8b20f3"; const React = __vite__cjsImport3_react.__esModule ? __vite__cjsImport3_react.default : __vite__cjsImport3_react;
-import { motion } from "/node_modules/.vite/deps/framer-motion.js?v=ef8b20f3";
-import { Shield, Scan, Bug, Eye, Activity, ArrowRight } from "/node_modules/.vite/deps/lucide-react.js?v=ef8b20f3";
-import { Link } from "/node_modules/.vite/deps/react-router-dom.js?v=ef8b20f3";
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=82de9d48"; const React = __vite__cjsImport3_react.__esModule ? __vite__cjsImport3_react.default : __vite__cjsImport3_react;
+import { motion } from "/node_modules/.vite/deps/framer-motion.js?v=82de9d48";
+import { Shield, Scan, Bug, Eye, Activity, ArrowRight } from "/node_modules/.vite/deps/lucide-react.js?v=76f08321";
+import { Link } from "/node_modules/.vite/deps/react-router-dom.js?v=c96743a3";
 import { base44 } from "/src/api/base44Client.js";
-import { useQuery } from "/node_modules/.vite/deps/@tanstack_react-query.js?v=ef8b20f3";
+import { useQuery } from "/node_modules/.vite/deps/@tanstack_react-query.js?v=95e257e8";
 import StatCard from "/src/components/ui-custom/StatCard.jsx";
 import ThreatChart from "/src/components/dashboard/ThreatChart.jsx";
 import RecentScans from "/src/components/dashboard/RecentScans.jsx";

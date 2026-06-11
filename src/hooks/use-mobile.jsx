@@ -1,5 +1,5 @@
 var _s = $RefreshSig$();
-import __vite__cjsImport0_react from "/node_modules/.vite/deps/react.js?v=ef8b20f3"; const React = ((m) => m?.__esModule ? m : { ...typeof m === "object" && !Array.isArray(m) || typeof m === "function" ? m : {}, default: m })(__vite__cjsImport0_react);
+import __vite__cjsImport0_react from "/node_modules/.vite/deps/react.js?v=82de9d48"; const React = ((m) => m?.__esModule ? m : { ...typeof m === "object" && !Array.isArray(m) || typeof m === "function" ? m : {}, default: m })(__vite__cjsImport0_react);
 const MOBILE_BREAKPOINT = 768;
 export function useIsMobile() {
   _s();

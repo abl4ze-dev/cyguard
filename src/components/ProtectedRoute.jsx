@@ -1,4 +1,4 @@
-import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/ProtectedRoute.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=ef8b20f3"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/ProtectedRoute.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=82de9d48"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
 import * as RefreshRuntime from "/@react-refresh";
 const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
 let prevRefreshReg;
@@ -15,8 +15,8 @@ if (import.meta.hot && !inWebWorker) {
   window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
 }
 var _s = $RefreshSig$();
-import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=ef8b20f3"; const useEffect = __vite__cjsImport3_react["useEffect"];
-import { Outlet } from "/node_modules/.vite/deps/react-router-dom.js?v=ef8b20f3";
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=82de9d48"; const useEffect = __vite__cjsImport3_react["useEffect"];
+import { Outlet } from "/node_modules/.vite/deps/react-router-dom.js?v=c96743a3";
 import { useAuth } from "/src/lib/AuthContext.jsx";
 import UserNotRegisteredError from "/src/components/UserNotRegisteredError.jsx";
 const DefaultFallback = () => /* @__PURE__ */ jsxDEV("div", { "data-source-location": "components/ProtectedRoute:7:2", "data-dynamic-content": "false", className: "fixed inset-0 flex items-center justify-center", children: /* @__PURE__ */ jsxDEV("div", { "data-source-location": "components/ProtectedRoute:8:4", "data-dynamic-content": "false", className: "w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" }, void 0, false, {

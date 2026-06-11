@@ -21,7 +21,7 @@ import ComparisonSection from "/src/components/landing/ComparisonSection.jsx";
 import CTASection from "/src/components/landing/CTASection.jsx";
 import Footer from "/src/components/landing/Footer.jsx";
 import LandingAIDetectorTeaser from "/src/components/landing/LandingAIDetectorTeaser.jsx";
-import OpenSourceSection from "/src/components/landing/OpenSourceSection.jsx?t=1781205168005";
+import OpenSourceSection from "/src/components/landing/OpenSourceSection.jsx?t=1781205748381";
 export default function Landing() {
   return /* @__PURE__ */ jsxDEV("div", { "data-source-location": "pages/Landing:12:4", "data-dynamic-content": "false", children: [
     /* @__PURE__ */ jsxDEV(HeroSection, { "data-source-location": "pages/Landing:13:6", "data-dynamic-content": "false" }, void 0, false, {

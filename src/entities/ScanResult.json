@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-  <head><script defer data-preview-inject="true" data-app-id="6a0da0da2884724c0bb23a29" data-preview-type="sandbox" data-rum-app-id="db50c921-10c3-4f12-bccb-950fa174b708" data-rum-client-token="pubfe8a4f2972b412b4556fd67e77f82cb4" data-dd-site="datadoghq.com" src="https://app.base44.com/builder-bridge.js?t=1781205224"></script>
+  <head><script defer data-preview-inject="true" data-app-id="6a0da0da2884724c0bb23a29" data-preview-type="sandbox" data-rum-app-id="db50c921-10c3-4f12-bccb-950fa174b708" data-rum-client-token="pubfe8a4f2972b412b4556fd67e77f82cb4" data-dd-site="datadoghq.com" src="https://app.base44.com/builder-bridge.js?t=1781206073"></script>
     <script>
     (function() {
         var IGNORE = { SCRIPT: 1, STYLE: 1, LINK: 1, META: 1, NOSCRIPT: 1, TEMPLATE: 1 };
@@ -214,7 +214,7 @@ window.$RefreshSig$ = () => (type) => type;</script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx?t=1781205168005"></script>
+    <script type="module" src="/src/main.jsx?t=1781205748381"></script>
     <script src="/node_modules/@base44/vite-plugin/dist/injections/sandbox-mount-observer.js" type="module"></script>
     <script type="module">if (window.self !== window.top) {
   const mode = new URLSearchParams(location.search).get("sandbox-bridge");

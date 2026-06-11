@@ -1,4 +1,4 @@
-import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/App.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=3049f6b1"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/App.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=ef8b20f3"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
 import * as RefreshRuntime from "/@react-refresh";
 const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
 let prevRefreshReg;
@@ -16,20 +16,20 @@ if (import.meta.hot && !inWebWorker) {
 }
 var _s = $RefreshSig$();
 import { Toaster } from "/src/components/ui/toaster.jsx";
-import { QueryClientProvider } from "/node_modules/.vite/deps/@tanstack_react-query.js?v=cc9a851a";
+import { QueryClientProvider } from "/node_modules/.vite/deps/@tanstack_react-query.js?v=ef8b20f3";
 import { queryClientInstance } from "/src/lib/query-client.js";
-import { BrowserRouter as Router, Route, Routes } from "/node_modules/.vite/deps/react-router-dom.js?v=0c595644";
+import { BrowserRouter as Router, Route, Routes } from "/node_modules/.vite/deps/react-router-dom.js?v=ef8b20f3";
 import PageNotFound from "/src/lib/PageNotFound.jsx";
 import { AuthProvider, useAuth } from "/src/lib/AuthContext.jsx";
 import UserNotRegisteredError from "/src/components/UserNotRegisteredError.jsx";
 import { ThemeProvider } from "/src/lib/ThemeContext.jsx";
 import AppLayout from "/src/components/layout/AppLayout.jsx";
-import Landing from "/src/pages/Landing.jsx?t=1781201831124";
+import Landing from "/src/pages/Landing.jsx?t=1781203789212";
 import Dashboard from "/src/pages/Dashboard.jsx";
 import ScanCenter from "/src/pages/ScanCenter.jsx";
 import Reports from "/src/pages/Reports.jsx";
 import Privacy from "/src/pages/Privacy.jsx";
-import Extension from "/src/pages/Extension.jsx?t=1781201957237";
+import Extension from "/src/pages/Extension.jsx?t=1781203789212";
 import Settings from "/src/pages/Settings.jsx";
 import FlaggedSites from "/src/pages/FlaggedSites.jsx";
 import CyberNews from "/src/pages/CyberNews.jsx";

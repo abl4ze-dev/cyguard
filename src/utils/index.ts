@@ -1,0 +1,5 @@
+export function createPageUrl(pageName) {
+  return "/" + pageName.replace(/ /g, "-");
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImluZGV4LnRzIl0sInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCBmdW5jdGlvbiBjcmVhdGVQYWdlVXJsKHBhZ2VOYW1lOiBzdHJpbmcpIHtcbiAgcmV0dXJuICcvJyArIHBhZ2VOYW1lLnJlcGxhY2UoLyAvZywgJy0nKTtcbn0iXSwibWFwcGluZ3MiOiJBQUFPLGdCQUFTLGNBQWMsVUFBa0I7QUFDOUMsU0FBTyxNQUFNLFNBQVMsUUFBUSxNQUFNLEdBQUc7QUFDekM7IiwibmFtZXMiOltdfQ==

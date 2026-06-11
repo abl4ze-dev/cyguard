@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script defer data-preview-inject="true" data-app-id="6a0da0da2884724c0bb23a29" data-preview-type="sandbox" data-rum-app-id="db50c921-10c3-4f12-bccb-950fa174b708" data-rum-client-token="pubfe8a4f2972b412b4556fd67e77f82cb4" data-dd-site="datadoghq.com" src="https://app.base44.com/builder-bridge.js?t=1781201997"></script>
+    <script>
+    (function() {
+        var IGNORE = { SCRIPT: 1, STYLE: 1, LINK: 1, META: 1, NOSCRIPT: 1, TEMPLATE: 1 };
+        const fire = () => window.parent.postMessage({ type: 'IFRAME_CONTENT_READY' }, '*');
+        function check() {
+            var body = document.body;
+            if (!body) return false;
+            for (var idx = 0; idx < body.children.length; idx++) {
+                if (!IGNORE[body.children[idx].tagName]) return true;
+            }
+            return false;
+        }
+        function start() {
+            if (check()) { fire(); return; }
+            var observer = new MutationObserver(function() {
+                if (check()) { fire(); observer.disconnect(); }
+            });
+            observer.observe(document.documentElement, { childList: true, subtree: true });
+        }
+        if (document.body) { start(); }
+        else { document.addEventListener('DOMContentLoaded', start, { once: true }); }
+    })();
+    </script>
+    <script>
+    (function() {
+        if (window.self === window.top) return;
+        var APP_ID = "6a0da0da2884724c0bb23a29";
+        var PREVIEW_TYPE = "sandbox";
+        var on404 = false;
+        var booted = false;
+        function detect() { return !!document.querySelector('[data-source-location^="PageNotFound:"]'); }
+        function payload() { return { app_id: APP_ID, preview_type: PREVIEW_TYPE, url_path: window.location.pathname }; }
+        function tick() {
+            var now = detect();
+            if (now && !on404) {
+                on404 = true;
+                window.parent.postMessage({ type: 'PREVIEW_PAGE_NOT_FOUND', payload: payload() }, '*');
+            } else if (!now && (on404 || !booted)) {
+                // On first tick of a fresh document, emit a cleared signal even when
+                // not currently on a 404 — the parent may have latched is404=true from
+                // a previous document at the same URL (e.g. after an iframe reload).
+                on404 = false;
+                window.parent.postMessage({ type: 'PREVIEW_PAGE_NOT_FOUND_CLEARED', payload: payload() }, '*');
+            }
+            booted = true;
+        }
+        function start() {
+            tick();
+            new MutationObserver(tick).observe(document.body, { childList: true, subtree: true });
+        }
+        if (document.body) { start(); }
+        else { document.addEventListener('DOMContentLoaded', start, { once: true }); }
+    })();
+    </script>
+    <script>
+    (function() {
+        if (window.self === window.top) return;
+        function fire() { window.parent.postMessage({ type: 'REACT_ROOT_HAS_CHILDREN' }, '*'); }
+        function findRoot() {
+            return document.getElementById('root')
+                || document.getElementById('app')
+                || document.querySelector('[data-react-root]');
+        }
+        // One-shot: wait for DOMContentLoaded (static HTML parsed by then, so the
+        // Base44 convention <div id="root"> is either present or not coming),
+        // observe the root's childList until the first element child appears,
+        // then fire and disconnect. No tree-wide subtree observer.
+        function start() {
+            var root = findRoot();
+            if (!root) return;
+            if (root.childElementCount > 0) { fire(); return; }
+            var obs = new MutationObserver(function() {
+                if (root.childElementCount > 0) { fire(); obs.disconnect(); }
+            });
+            obs.observe(root, { childList: true });
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', start, { once: true });
+        } else { start(); }
+    })();
+    </script>
+    <script>
+    (function() {
+        if (window.self === window.top) return;
+        function postUnsupported(reason) {
+            window.parent.postMessage({
+                type: 'IFRAME_FIRST_CONTENTFUL_PAINT_UNSUPPORTED',
+                payload: { reason: reason, userAgent: navigator.userAgent }
+            }, '*');
+        }
+        if (typeof PerformanceObserver === 'undefined') {
+            postUnsupported('no_performance_observer');
+            return;
+        }
+        try {
+            var obs = new PerformanceObserver(function(list) {
+                var entries = list.getEntries();
+                for (var i = 0; i < entries.length; i++) {
+                    if (entries[i].name === 'first-contentful-paint') {
+                        obs.disconnect();
+                        window.parent.postMessage({ type: 'IFRAME_FIRST_CONTENTFUL_PAINT' }, '*');
+                        return;
+                    }
+                }
+            });
+            obs.observe({ type: 'paint', buffered: true });
+        } catch (e) {
+            postUnsupported('observe_threw:' + (e && e.name ? e.name : 'Error'));
+        }
+    })();
+    </script>
+    <script>
+    (function() {
+        if (window.self === window.top) return;
+        var APP_ID = "6a0da0da2884724c0bb23a29";
+        var PREVIEW_TYPE = "sandbox";
+        var DEPS_PATH = '/node_modules/.vite/deps/';
+        var fired = false;
+        function isViteDep(url) {
+            return typeof url === 'string' && url.indexOf(DEPS_PATH) !== -1;
+        }
+        function looksFailed(entry) {
+            // HTTP failure status (Chrome 109+).
+            if (entry.responseStatus && entry.responseStatus >= 400) return true;
+            // Aborted / blocked / network-error: request ran, nothing decoded.
+            // decodedBodySize === 0 distinguishes from cache hits (Safari has no
+            // deliveryType, so we can't rely on it to exclude cached responses).
+            return entry.transferSize === 0
+                && entry.decodedBodySize === 0
+                && entry.duration > 0
+                && entry.responseEnd > 0;
+        }
+        function report(entry) {
+            if (fired) return;
+            fired = true;
+            window.parent.postMessage({
+                type: 'SANDBOX_VITE_DEPS_404',
+                payload: {
+                    app_id: APP_ID,
+                    preview_type: PREVIEW_TYPE,
+                    url: entry.name,
+                    initiator_type: entry.initiatorType,
+                    response_status: entry.responseStatus
+                }
+            }, '*');
+        }
+        new PerformanceObserver(function(list) {
+            var entries = list.getEntries();
+            for (var i = 0; i < entries.length; i++) {
+                if (isViteDep(entries[i].name) && looksFailed(entries[i])) {
+                    report(entries[i]);
+                    return;
+                }
+            }
+        }).observe({ type: 'resource', buffered: true });
+    })();
+    </script>
+    <script>
+    (function() {
+        if (window.self === window.top) return;
+        if (typeof performance === 'undefined' || typeof performance.getEntriesByType !== 'function') return;
+        var DEPS_PATH = '/node_modules/.vite/deps/';
+        var QUIESCENCE_MS = 1500;
+        var POLL_MS = 500;
+        var fired = false;
+        var intervalId = setInterval(function() {
+            if (fired) return;
+            var entries = performance.getEntriesByType('resource');
+            var lastDepEnd = 0;
+            for (var i = 0; i < entries.length; i++) {
+                if (entries[i].name.indexOf(DEPS_PATH) === -1) continue;
+                if (entries[i].responseEnd > lastDepEnd) lastDepEnd = entries[i].responseEnd;
+            }
+            if (lastDepEnd === 0) return;
+            if (performance.now() - lastDepEnd >= QUIESCENCE_MS) {
+                fired = true;
+                clearInterval(intervalId);
+                window.parent.postMessage({ type: 'IFRAME_VITE_DEPS_SETTLED' }, '*');
+            }
+        }, POLL_MS);
+    })();
+    </script>
+        <script type="module">
+        try {
+            const { createHotContext } = await import("/@vite/client");
+            const hot = createHotContext("/__builder-bridge-hmr");
+            hot.on("vite:ws:connect", () => window.parent.postMessage({ type: "SANDBOX_WS_CONNECT" }, "*"));
+            hot.on("vite:ws:disconnect", () => window.parent.postMessage({ type: "SANDBOX_WS_DISCONNECT" }, "*"));
+            hot.on("vite:beforeFullReload", () => window.parent.postMessage({ type: "sandbox:beforeFullReload" }, "*"));
+        } catch (e) {
+            window.parent.postMessage({ type: "SANDBOX_WS_ATTACH_FAILED", error: String(e) }, "*");
+        }
+        </script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Access Blocked — CYGUARD Shield</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #070d1a;
+    --card: #0d1224;
+    --border: rgba(239,68,68,0.35);
+    --fg: #e2e8f0;
+    --fg2: #94a3b8;
+    --fg3: #475569;
+    --primary: #00d4ff;
+    --accent: #7c3aed;
+    --danger: #ef4444;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.02) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .card {
+    background: rgba(13,18,36,0.82);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 36px 32px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 0 80px rgba(239,68,68,0.08), 0 0 0 1px rgba(255,255,255,0.03);
+    animation: fadeUp 0.3s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .brand-logo {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #00d4ff, #7c3aed);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .brand-text-name {
+    font-size: 15px;
+    font-weight: 900;
+    color: var(--primary);
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .brand-text-sub {
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--fg3);
+    letter-spacing: 3px;
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--fg);
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+
+  .domain-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(239,68,68,0.25);
+    background: rgba(239,68,68,0.07);
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: #f87171;
+    margin-bottom: 14px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .threat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    margin-bottom: 18px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .threat-adult  { background: rgba(236,72,153,0.12); color: #ec4899; border: 1px solid rgba(236,72,153,0.25); }
+  .threat-threat { background: rgba(239,68,68,0.12);  color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+  .threat-manual { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
+
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+  }
+  .score-label { font-size: 11px; color: var(--fg3); font-weight: 600; }
+  .score-bar   { flex: 1; height: 5px; background: rgba(255,255,255,0.07); border-radius: 5px; overflow: hidden; }
+  .score-fill  { height: 100%; border-radius: 5px; background: linear-gradient(90deg, #f59e0b, #ef4444); }
+  .score-num   { font-size: 12px; font-weight: 900; color: #f87171; font-family: monospace; }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .btn-back {
+    flex: 1;
+    padding: 13px 20px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #00d4ff, #7c3aed);
+    border: none;
+    color: #050910;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: inherit;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn-back:hover { opacity: 0.88; transform: scale(1.02); }
+  .btn-back:active { transform: scale(0.98); }
+
+  .btn-proceed {
+    padding: 13px 18px;
+    border-radius: 14px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--fg3);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-proceed:hover { border-color: rgba(255,255,255,0.2); color: var(--fg2); }
+
+  .accordions { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; display: flex; flex-direction: column; gap: 1px; }
+
+  details { border-bottom: 1px solid rgba(255,255,255,0.05); }
+  details:last-child { border-bottom: none; }
+
+  summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 2px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--fg);
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.18s;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary:hover { color: var(--primary); }
+  .acc-icon { font-size: 16px; color: var(--fg3); transition: transform 0.25s; line-height: 1; }
+  details[open] .acc-icon { transform: rotate(45deg); color: var(--primary); }
+
+  .acc-body {
+    font-size: 12px;
+    color: var(--fg2);
+    line-height: 1.75;
+    padding: 0 2px 12px;
+  }
+  .acc-body strong { color: var(--fg); }
+
+  .block-footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--fg3);
+  }
+  .block-footer a { color: var(--primary); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="card" id="mainCard">
+  <div class="brand">
+    <div class="brand-logo">
+      <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+        <path d="M16 2L4 7.5V16c0 8.2 7.2 13.8 12 15.2C21.8 29.8 28 24.2 28 16V7.5L16 2z" fill="white" opacity="0.9"/>
+        <path d="M11 16.5l3.5 3.5 6.5-7" stroke="#070d1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-text-name">CYGUARD</div>
+      <div class="brand-text-sub">SHIELD</div>
+    </div>
+  </div>
+
+  <h1>Access Blocked</h1>
+
+  <div class="domain-badge" id="domainBadge">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+    <span id="domainText">blocked-site.com</span>
+  </div>
+
+  <div id="threatBadge" class="threat-badge threat-threat">Threat Detected</div>
+
+  <div class="score-row">
+    <span class="score-label">Threat Score</span>
+    <div class="score-bar"><div class="score-fill" id="scoreBar" style="width:70%"></div></div>
+    <span class="score-num" id="scoreNum">70/100</span>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-back" id="btnBack">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Go Back
+    </button>
+    <button class="btn-proceed" id="btnProceed">Proceed anyway</button>
+  </div>
+
+  <div class="accordions">
+    <details>
+      <summary>
+        Why can't I access this website?
+        <span class="acc-icon">+</span>
+      </summary>
+      <div class="acc-body" id="whyBody">
+        This website was blocked by CYGUARD Shield because it was identified as a potential threat.
+      </div>
+    </details>
+    <details>
+      <summary>
+        How to unblock this website?
+        <span class="acc-icon">+</span>
+      </summary>
+      <div class="acc-body">
+        Open the <strong>CYGUARD Shield</strong> extension popup, go to the <strong>Protect</strong> tab, toggle off the relevant filter, or add this domain to your <strong>Whitelist</strong>. You can also click <em>Proceed anyway</em> above for a one-time bypass.
+      </div>
+    </details>
+  </div>
+
+  <div class="block-footer">
+    Protected by <a href="https://cyguard.app" target="_blank">CYGUARD Shield</a> &middot; <span id="footerTs"></span>
+  </div>
+</div>
+
+<script src="blocked.js"></script>
+</body>
+</html>

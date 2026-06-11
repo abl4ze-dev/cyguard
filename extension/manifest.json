@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "CYGUARD Shield",
+  "version": "2.5.0",
+  "description": "Real-time protection: ad blocking, tracker blocking, malware detection & adult content filter",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ],
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "notifications",
+    "scripting",
+    "webNavigation",
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "declarative_net_request": {
+    "rule_resources": [
+      { "id": "block_ads",      "enabled": true, "path": "rules/block_ads.json" },
+      { "id": "block_trackers", "enabled": true, "path": "rules/block_trackers.json" },
+      { "id": "block_malware",  "enabled": true, "path": "rules/block_malware.json" },
+      { "id": "block_adult",    "enabled": true, "path": "rules/block_adult.json" }
+    ]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["blocked.html", "icons/*.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

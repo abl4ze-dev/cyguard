@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script defer data-preview-inject="true" data-app-id="6a0da0da2884724c0bb23a29" data-preview-type="sandbox" data-rum-app-id="db50c921-10c3-4f12-bccb-950fa174b708" data-rum-client-token="pubfe8a4f2972b412b4556fd67e77f82cb4" data-dd-site="datadoghq.com" src="https://app.base44.com/builder-bridge.js?t=1781201992"></script>
+    <script>
+    (function() {
+        var IGNORE = { SCRIPT: 1, STYLE: 1, LINK: 1, META: 1, NOSCRIPT: 1, TEMPLATE: 1 };
+        const fire = () => window.parent.postMessage({ type: 'IFRAME_CONTENT_READY' }, '*');
+        function check() {
+            var body = document.body;
+            if (!body) return false;
+            for (var idx = 0; idx < body.children.length; idx++) {
+                if (!IGNORE[body.children[idx].tagName]) return true;
+            }
+            return false;
+        }
+        function start() {
+            if (check()) { fire(); return; }
+            var observer = new MutationObserver(function() {
+                if (check()) { fire(); observer.disconnect(); }
+            });
+            observer.observe(document.documentElement, { childList: true, subtree: true });
+        }
+        if (document.body) { start(); }
+        else { document.addEventListener('DOMContentLoaded', start, { once: true }); }
+    })();
+    </script>
+    <script>
+    (function() {
+        if (window.self === window.top) return;
+        var APP_ID = "6a0da0da2884724c0bb23a29";
+        var PREVIEW_TYPE = "sandbox";
+        var on404 = false;
+        var booted = false;
+        function detect() { return !!document.querySelector('[data-source-location^="PageNotFound:"]'); }
+        function payload() { return { app_id: APP_ID, preview_type: PREVIEW_TYPE, url_path: window.location.pathname }; }
+        function tick() {
+            var now = detect();
+            if (now && !on404) {
+                on404 = true;
+                window.parent.postMessage({ type: 'PREVIEW_PAGE_NOT_FOUND', payload: payload() }, '*');
+            } else if (!now && (on404 || !booted)) {
+                // On first tick of a fresh document, emit a cleared signal even when
+                // not currently on a 404 — the parent may have latched is404=true from
+                // a previous document at the same URL (e.g. after an iframe reload).
+                on404 = false;
+                window.parent.postMessage({ type: 'PREVIEW_PAGE_NOT_FOUND_CLEARED', payload: payload() }, '*');
+            }
+            booted = true;
+        }
+        function start() {
+            tick();
+            new MutationObserver(tick).observe(document.body, { childList: true, subtree: true });
+        }
+        if (document.body) { start(); }
+        else { document.addEventListener('DOMContentLoaded', start, { once: true }); }
+    })();
+    </script>
+    <script>
+    (function() {
+        if (window.self === window.top) return;
+        function fire() { window.parent.postMessage({ type: 'REACT_ROOT_HAS_CHILDREN' }, '*'); }
+        function findRoot() {
+            return document.getElementById('root')
+                || document.getElementById('app')
+                || document.querySelector('[data-react-root]');
+        }
+        // One-shot: wait for DOMContentLoaded (static HTML parsed by then, so the
+        // Base44 convention <div id="root"> is either present or not coming),
+        // observe the root's childList until the first element child appears,
+        // then fire and disconnect. No tree-wide subtree observer.
+        function start() {
+            var root = findRoot();
+            if (!root) return;
+            if (root.childElementCount > 0) { fire(); return; }
+            var obs = new MutationObserver(function() {
+                if (root.childElementCount > 0) { fire(); obs.disconnect(); }
+            });
+            obs.observe(root, { childList: true });
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', start, { once: true });
+        } else { start(); }
+    })();
+    </script>
+    <script>
+    (function() {
+        if (window.self === window.top) return;
+        function postUnsupported(reason) {
+            window.parent.postMessage({
+                type: 'IFRAME_FIRST_CONTENTFUL_PAINT_UNSUPPORTED',
+                payload: { reason: reason, userAgent: navigator.userAgent }
+            }, '*');
+        }
+        if (typeof PerformanceObserver === 'undefined') {
+            postUnsupported('no_performance_observer');
+            return;
+        }
+        try {
+            var obs = new PerformanceObserver(function(list) {
+                var entries = list.getEntries();
+                for (var i = 0; i < entries.length; i++) {
+                    if (entries[i].name === 'first-contentful-paint') {
+                        obs.disconnect();
+                        window.parent.postMessage({ type: 'IFRAME_FIRST_CONTENTFUL_PAINT' }, '*');
+                        return;
+                    }
+                }
+            });
+            obs.observe({ type: 'paint', buffered: true });
+        } catch (e) {
+            postUnsupported('observe_threw:' + (e && e.name ? e.name : 'Error'));
+        }
+    })();
+    </script>
+    <script>
+    (function() {
+        if (window.self === window.top) return;
+        var APP_ID = "6a0da0da2884724c0bb23a29";
+        var PREVIEW_TYPE = "sandbox";
+        var DEPS_PATH = '/node_modules/.vite/deps/';
+        var fired = false;
+        function isViteDep(url) {
+            return typeof url === 'string' && url.indexOf(DEPS_PATH) !== -1;
+        }
+        function looksFailed(entry) {
+            // HTTP failure status (Chrome 109+).
+            if (entry.responseStatus && entry.responseStatus >= 400) return true;
+            // Aborted / blocked / network-error: request ran, nothing decoded.
+            // decodedBodySize === 0 distinguishes from cache hits (Safari has no
+            // deliveryType, so we can't rely on it to exclude cached responses).
+            return entry.transferSize === 0
+                && entry.decodedBodySize === 0
+                && entry.duration > 0
+                && entry.responseEnd > 0;
+        }
+        function report(entry) {
+            if (fired) return;
+            fired = true;
+            window.parent.postMessage({
+                type: 'SANDBOX_VITE_DEPS_404',
+                payload: {
+                    app_id: APP_ID,
+                    preview_type: PREVIEW_TYPE,
+                    url: entry.name,
+                    initiator_type: entry.initiatorType,
+                    response_status: entry.responseStatus
+                }
+            }, '*');
+        }
+        new PerformanceObserver(function(list) {
+            var entries = list.getEntries();
+            for (var i = 0; i < entries.length; i++) {
+                if (isViteDep(entries[i].name) && looksFailed(entries[i])) {
+                    report(entries[i]);
+                    return;
+                }
+            }
+        }).observe({ type: 'resource', buffered: true });
+    })();
+    </script>
+    <script>
+    (function() {
+        if (window.self === window.top) return;
+        if (typeof performance === 'undefined' || typeof performance.getEntriesByType !== 'function') return;
+        var DEPS_PATH = '/node_modules/.vite/deps/';
+        var QUIESCENCE_MS = 1500;
+        var POLL_MS = 500;
+        var fired = false;
+        var intervalId = setInterval(function() {
+            if (fired) return;
+            var entries = performance.getEntriesByType('resource');
+            var lastDepEnd = 0;
+            for (var i = 0; i < entries.length; i++) {
+                if (entries[i].name.indexOf(DEPS_PATH) === -1) continue;
+                if (entries[i].responseEnd > lastDepEnd) lastDepEnd = entries[i].responseEnd;
+            }
+            if (lastDepEnd === 0) return;
+            if (performance.now() - lastDepEnd >= QUIESCENCE_MS) {
+                fired = true;
+                clearInterval(intervalId);
+                window.parent.postMessage({ type: 'IFRAME_VITE_DEPS_SETTLED' }, '*');
+            }
+        }, POLL_MS);
+    })();
+    </script>
+        <script type="module">
+        try {
+            const { createHotContext } = await import("/@vite/client");
+            const hot = createHotContext("/__builder-bridge-hmr");
+            hot.on("vite:ws:connect", () => window.parent.postMessage({ type: "SANDBOX_WS_CONNECT" }, "*"));
+            hot.on("vite:ws:disconnect", () => window.parent.postMessage({ type: "SANDBOX_WS_DISCONNECT" }, "*"));
+            hot.on("vite:beforeFullReload", () => window.parent.postMessage({ type: "sandbox:beforeFullReload" }, "*"));
+        } catch (e) {
+            window.parent.postMessage({ type: "SANDBOX_WS_ATTACH_FAILED", error: String(e) }, "*");
+        }
+        </script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CYGUARD Shield</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body class="dark" style="background:#080d1a;color:#e2e8f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;width:360px;">
+
+<!-- force repaint on reload -->
+<!-- ── HEADER ──────────────────────────────────────── -->
+<header>
+  <div class="brand">
+    <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+      <path d="M16 2L4 7.5V16c0 8.2 7.2 13.8 12 15.2C21.8 29.8 28 24.2 28 16V7.5L16 2z" fill="url(#sg)"/>
+      <path d="M11 16.5l3.5 3.5 6.5-7" stroke="#070d1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <defs>
+        <linearGradient id="sg" x1="4" y1="2" x2="28" y2="31" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#00d4ff"/>
+          <stop offset="100%" stop-color="#7c3aed"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div>
+      <div class="brand-name">CYGUARD</div>
+      <div class="brand-sub">SHIELD v2.5</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" id="themeBtn" title="Toggle theme">
+      <svg id="themeIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+      </svg>
+    </button>
+    <label class="main-toggle-wrap" title="Master protection toggle">
+      <input type="checkbox" id="togMain" checked>
+      <span class="toggle-sm"></span>
+    </label>
+  </div>
+</header>
+
+<!-- ── TABS ─────────────────────────────────────────── -->
+<nav class="tabs">
+  <button class="tab active" data-tab="scan">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Scan
+  </button>
+  <button class="tab" data-tab="protect">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Protect
+  </button>
+  <button class="tab" data-tab="report">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Report
+  </button>
+</nav>
+
+<!-- ══════════════════════════════════════════════════
+     SCAN TAB
+══════════════════════════════════════════════════ -->
+<div class="panel active" id="tab-scan">
+
+  <!-- Status banner -->
+  <div class="status-banner" id="statusBanner">
+    <div class="status-dot"></div>
+    <span id="statusTxt">Initializing...</span>
+    <span class="status-pill" id="statusPill"></span>
+  </div>
+
+  <!-- Site card -->
+  <div class="site-card">
+    <div class="site-card-left">
+      <canvas id="scoreCanvas" width="64" height="64"></canvas>
+      <div class="score-label" id="scoreLabel">--</div>
+    </div>
+    <div class="site-card-right">
+      <div class="site-domain" id="siteDomain">Loading...</div>
+      <div class="site-verdict" id="siteVerdict">Initializing scanner</div>
+    </div>
+  </div>
+
+  <!-- Threat list -->
+  <div class="threat-list hidden" id="threatList"></div>
+
+  <!-- Mini stats -->
+  <div class="mini-stats">
+    <div class="mini-stat"><span class="mini-val" id="cAds">0</span><span class="mini-lbl">Ads</span></div>
+    <div class="mini-stat"><span class="mini-val" id="cTrackers">0</span><span class="mini-lbl">Trackers</span></div>
+    <div class="mini-stat"><span class="mini-val" id="cThreats">0</span><span class="mini-lbl">Threats</span></div>
+    <div class="mini-stat"><span class="mini-val" id="cScanned">0</span><span class="mini-lbl">Scanned</span></div>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="btn-row">
+    <button class="btn-secondary" id="actBlockManual">🚫 Block Site</button>
+    <button class="btn-secondary" id="actFilterLog">📋 Log</button>
+    <button class="btn-secondary" id="rescanBtn">↺ Rescan</button>
+  </div>
+
+  <!-- Blocked on page -->
+  <div class="blocked-row">
+    <span>Blocked on this page:</span>
+    <span class="blocked-count" id="blockPageCount">0</span>
+    <span id="blockDomain" style="margin-left:4px;font-size:10px;color:var(--fg3);"></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     PROTECT TAB
+══════════════════════════════════════════════════ -->
+<div class="panel" id="tab-protect">
+
+  <div class="sec-title">Security Modules</div>
+
+  <div class="mod-group">
+    <div class="mod-item">
+      <div class="mod-info">
+        <span class="mod-icon">🚫</span>
+        <div>
+          <div class="mod-name">Ad Blocking</div>
+          <div class="mod-desc">Remove ads network-wide</div>
+        </div>
+      </div>
+      <label class="toggle-wrap"><input type="checkbox" id="togAds" checked><span class="toggle"></span></label>
+    </div>
+    <div class="mod-item">
+      <div class="mod-info">
+        <span class="mod-icon">👁</span>
+        <div>
+          <div class="mod-name">Tracker Block</div>
+          <div class="mod-desc">Stop cross-site tracking</div>
+        </div>
+      </div>
+      <label class="toggle-wrap"><input type="checkbox" id="togTrackers" checked><span class="toggle"></span></label>
+    </div>
+    <div class="mod-item">
+      <div class="mod-info">
+        <span class="mod-icon">🦠</span>
+        <div>
+          <div class="mod-name">Malware Filter</div>
+          <div class="mod-desc">Block malware &amp; phishing</div>
+        </div>
+      </div>
+      <label class="toggle-wrap"><input type="checkbox" id="togMalware" checked><span class="toggle"></span></label>
+    </div>
+    <div class="mod-item">
+      <div class="mod-info">
+        <span class="mod-icon">🔞</span>
+        <div>
+          <div class="mod-name">Adult Filter</div>
+          <div class="mod-desc">Block explicit content</div>
+        </div>
+      </div>
+      <label class="toggle-wrap"><input type="checkbox" id="togAdult" checked><span class="toggle"></span></label>
+    </div>
+  </div>
+
+  <div class="sec-title">Whitelist (bypass protection)</div>
+
+  <div class="wl-row">
+    <input type="text" id="wlInput" class="txt-input" placeholder="example.com">
+    <button class="wl-btn" id="wlAddBtn">Add</button>
+  </div>
+  <div id="wlList"></div>
+  <div class="wl-empty hidden" id="wlEmpty">No whitelisted sites</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     REPORT TAB
+══════════════════════════════════════════════════ -->
+<div class="panel" id="tab-report">
+
+  <div class="sec-title">Report a Suspicious Site</div>
+  <p style="font-size:11px;color:var(--fg3);margin-bottom:10px;">Help protect the community by flagging dangerous websites.</p>
+
+  <label class="field-lbl">URL to Report</label>
+  <input type="text" id="reportUrl" class="txt-input" placeholder="https://suspicious-site.com" style="margin-bottom:10px;">
+
+  <label class="field-lbl">Threat Type</label>
+  <div class="chip-group" id="chipGroup">
+    <button class="chip active" data-val="phishing">Phishing</button>
+    <button class="chip" data-val="malware">Malware</button>
+    <button class="chip" data-val="scam">Scam</button>
+    <button class="chip" data-val="adult">Adult</button>
+    <button class="chip" data-val="spam">Spam</button>
+    <button class="chip" data-val="other">Other</button>
+  </div>
+
+  <div class="captcha-row">
+    <input type="checkbox" id="captchaCheck">
+    <label for="captchaCheck" class="captcha-lbl">I'm not a robot — this is a genuine report</label>
+  </div>
+
+  <button class="submit-btn" id="reportBtn">Submit Report</button>
+  <div class="fb hidden" id="reportFb"></div>
+</div>
+
+<!-- ── FILTER LOG MODAL ──────────────────────────── -->
+<div class="modal" id="logModal">
+  <div class="modal-card">
+    <div class="modal-hdr">
+      <span class="modal-title">Filter Log</span>
+      <button class="icon-btn" id="logClose">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="log-body" id="logBody"></div>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
